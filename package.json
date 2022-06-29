@@ -1,0 +1,29 @@
+{
+  "name": "crud-livros",
+  "version": "1.0.0",
+  "description": "Exemplo de microserviço expondo API de CRUD de livros.",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielPlaza95/CRUD-Livros.git"
+  },
+  "author": "Gabriel Plaza Teixeira da Silva",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/GabrielPlaza95/CRUD-Livros/issues"
+  },
+  "homepage": "https://github.com/GabrielPlaza95/CRUD-Livros#readme",
+  "dependencies": {
+    "better-sqlite3": "^7.5.3",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-async-errors": "^3.1.1"
+  },
+  "type": "module",
+  "devDependencies": {
+    "jest": "^28.1.1"
+  }
+}
