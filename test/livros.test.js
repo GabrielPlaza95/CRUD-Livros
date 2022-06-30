@@ -29,6 +29,16 @@ describe('GET Endpoint', () => {
 	})
   })
 
+  it('should fail to locate a book with the given sbn', async () => {
+    const res = await request(app)
+      .get('/livros/9788535931900')
+
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toEqual({
+		errors: { message: 'Not Found' }
+	})
+  })
+	
   it('should obtain the first two books by title', async () => {
     const res = await request(app)
       .get('/livros?limit=2')
@@ -56,6 +66,19 @@ describe('PUT Endpoint', () => {
 	`).get()
 
 	expect(estoque).toEqual(5)
+  })
+
+  it('should fail to update a book that is not in the library', async () => {
+    const res = await request(app)
+      .put('/livros/9788535931900')
+      .send({
+		estoque: 9
+      })
+
+    expect(res.statusCode).toEqual(404)
+    expect(res.body).toEqual({
+		errors: { message: 'Not Found' }
+	})
   })
 })
 
