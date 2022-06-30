@@ -7,6 +7,18 @@ export function get(conn, sbn) {
 	return query.get(sbn)
 }
 
+export function getAll(conn, page, limit) {
+	const query = conn.prepare(`
+		SELECT nome
+		FROM livros
+		WHERE estoque > 0
+		ORDER BY nome
+		LIMIT ?
+		OFFSET ?;
+	`)
+	return query.all(limit, page * limit).map(l => l.nome)
+}
+
 export function insert(conn, cols) {
 	const query = conn.prepare(`
 		INSERT INTO livros (sbn, nome, descricao, autor, estoque)
@@ -27,5 +39,13 @@ export function set(conn, sbn, cols) {
 		WHERE sbn = $sbn;
 	`)
 
-	return query.run({ id, ...cols })
+	return query.run({ sbn, ...curr })
+}
+
+export function remove(conn, sbn) {
+	const query = conn.prepare(`
+		DELETE FROM livros
+		WHERE sbn = ?;
+	`)
+	return query.run(sbn)
 }

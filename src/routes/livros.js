@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { get, set, insert } from '../models/livros.js'
+import { get, getAll, set, insert, remove } from '../models/livros.js'
 
 const router = Router()
 
@@ -17,6 +17,15 @@ router.get('/:sbn', async (req, res) => {
 	res.json(book)
 })
 
+router.get('/', async (req, res) => {
+	const { page = 0, limit = 10 } = req.query
+	const conn = req.app.get('db connection')
+
+	const books = getAll(conn, page, limit)
+
+	res.json(books)
+})
+
 router.put('/:sbn', async (req, res) => {
 	const { sbn } = req.params
 	const conn = req.app.get('db connection')
@@ -24,7 +33,7 @@ router.put('/:sbn', async (req, res) => {
 	const params = pick(req.body, ['nome', 'autor', 'descricao', 'estoque'])
 	set(conn, sbn, params)
 
-	res.end()
+  	res.status(204).json({})
 })
 
 router.post('/', async (req, res) => {
@@ -33,8 +42,16 @@ router.post('/', async (req, res) => {
 	const params = pick(req.body, ['sbn', 'nome', 'autor', 'descricao', 'estoque'])
 	insert(conn, params)
 
-  	res.status(201);
-	res.send('""');
+  	res.status(201).json({})
+})
+
+router.delete('/:sbn', async (req, res) => {
+	const { sbn } = req.params
+	const conn = req.app.get('db connection')
+
+	remove(conn, sbn)
+
+  	res.status(204).json({})
 })
 
 export default router
