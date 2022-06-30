@@ -1,5 +1,5 @@
 import { Router } from 'express'
-//import livro from './livro.js'
+import livros from './livros.js'
 
 const router = Router()
 
@@ -7,6 +7,6 @@ router.get('/', (req, res) => {
 	res.send('Welcome to your library!')
 })
 
-//router.use('/livro', livro)
+router.use('/livros', livros)
 
 export default router
