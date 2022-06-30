@@ -2,9 +2,9 @@
   "name": "crud-livros",
   "version": "1.0.0",
   "description": "Exemplo de microserviço expondo API de CRUD de livros.",
-  "main": "src/app.js",
   "scripts": {
-    "test": "jest"
+	"start": "NODE_ENV=production node src/app.js",
+    "test": "NODE_ENV=test node --experimental-modules --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
   },
   "type": "module",
   "devDependencies": {
-    "jest": "^28.1.1"
+    "jest": "^28.1.1",
+    "supertest": "^6.2.3"
   }
 }
