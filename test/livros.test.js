@@ -3,7 +3,8 @@ import app from '../src/loaders/index.js'
 
 const conn = app.get('db connection')
 
-beforeAll(() => {
+beforeEach(() => {
+	conn.prepare('DELETE FROM livros').run()
 	conn.prepare(`
 		INSERT INTO livros (sbn, nome, descricao, autor, estoque)
 		VALUES
@@ -13,12 +14,8 @@ beforeAll(() => {
 	`).run()
 })
 
-afterAll(() => {
-	conn.prepare('DELETE FROM livros').run()
-})
-
 describe('GET Endpoint', () => {
-  it('should create a new GET', async () => {
+  it('should obtain a single book\'s details', async () => {
     const res = await request(app)
       .get('/livros/9788535931983')
 
@@ -31,10 +28,39 @@ describe('GET Endpoint', () => {
 		estoque: 6
 	})
   })
+
+  it('should obtain the first two books by title', async () => {
+    const res = await request(app)
+      .get('/livros?limit=2')
+
+    expect(res.statusCode).toEqual(200)
+    expect(res.body.length).toEqual(2)
+    expect(res.body[0]).toEqual("Grande Sertão: Veredas")
+    expect(res.body[1]).toEqual("Norwegian Wood")
+  })
+})
+
+describe('PUT Endpoint', () => {
+  it('should update the number of copies of a book available on stock', async () => {
+    const res = await request(app)
+      .put('/livros/9788535931983')
+      .send({
+		estoque: 5
+      })
+
+    expect(res.statusCode).toEqual(204)
+    expect(res.body).toEqual({})
+	  
+	const { estoque } = conn.prepare(`
+		SELECT estoque FROM livros WHERE sbn = '9788535931983'
+	`).get()
+
+	expect(estoque).toEqual(5)
+  })
 })
 
 describe('POST Endpoint', () => {
-  it('should create a new POST', async () => {
+  it('should add a new title to the library', async () => {
     const res = await request(app)
       .post('/livros/')
       .send({
@@ -47,5 +73,27 @@ describe('POST Endpoint', () => {
 
     expect(res.statusCode).toEqual(201)
     expect(res.body).toEqual({})
+
+	const { nome } = conn.prepare(`
+		SELECT nome FROM livros WHERE sbn = '9788535918502'
+	`).get()
+
+	expect(nome).toEqual('Hibisco Roxo')
+  })
+})
+
+describe('DELETE Endpoint', () => {
+  it('should remove a book from the library', async () => {
+    const res = await request(app)
+      .delete('/livros/9788535931983')
+
+    expect(res.statusCode).toEqual(204)
+    expect(res.body).toEqual({})
+
+	const books = conn.prepare(`
+		SELECT * FROM livros WHERE sbn = '9788535931983'
+	`).all()
+
+	expect(books.length).toEqual(0)
   })
 })
